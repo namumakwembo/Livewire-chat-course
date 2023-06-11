@@ -11,13 +11,48 @@ class ChatBox extends Component
     public $body;
     public $loadedMessages;
 
+    public $paginate_var=10;
+
+    protected $listeners=[
+        'loadMore'
+    ];
+
+
+
+   public function loadMore() : void {
+
+
+        #increment 
+        $this->paginate_var += 10;
+
+        #call loadMessages()
+
+        $this->loadMessages();
+
+
+        #update the chat height 
+        $this->dispatchBrowserEvent('update-chat-height');
+        
+
+        
+    }
 
 
 
     public function loadMessages()
     {
 
-        $this->loadedMessages=Message::where('conversation_id',$this->selectedConversation->id)->get();
+        #get count
+        $count=Message::where('conversation_id',$this->selectedConversation->id)->count();
+
+        #skip and query
+        $this->loadedMessages=Message::where('conversation_id',$this->selectedConversation->id)
+        ->skip($count-$this->paginate_var)
+        ->take($this->paginate_var)
+        ->get();
+
+
+        return $this->loadedMessages;
     }
 
     public function sendMessage()
@@ -37,7 +72,6 @@ class ChatBox extends Component
         $this->reset('body');
 
         #scroll to bottom
-
         $this->dispatchBrowserEvent('scroll-bottom');
 
 
