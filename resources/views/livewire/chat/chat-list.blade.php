@@ -18,6 +18,16 @@
 
     },200);
 
+
+
+    Echo.private('users.{{Auth()->User()->id}}')
+    .notification((notification)=>{
+        if(notification['type']== 'App\\Notifications\\MessageRead'||notification['type']== 'App\\Notifications\\MessageSent')
+        {
+
+            window.Livewire.emit('refresh');
+        }
+    });
    
    "
  class="flex flex-col transition-all h-full overflow-hidden">
@@ -172,7 +182,10 @@
                                         View Profile
 
                                     </button>
-                                    <button class="items-center gap-3 flex w-full px-4 py-2 text-left text-sm leading-5 text-gray-500 hover:bg-gray-100 transition-all duration-150 ease-in-out focus:outline-none focus:bg-gray-100">
+                                    <button 
+                                    onclick="confirm('Are you sure?')||event.stopImmediatePropagation()"
+                                    wire:click="deleteByUser('{{encrypt($conversation->id)}}')"
+                                    class="items-center gap-3 flex w-full px-4 py-2 text-left text-sm leading-5 text-gray-500 hover:bg-gray-100 transition-all duration-150 ease-in-out focus:outline-none focus:bg-gray-100">
 
                                         <span>
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
